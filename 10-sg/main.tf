@@ -28,4 +28,6 @@ resource "aws_security_group_rule" "bastion_from_laptop" {
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = module.bastion.sg_id
+}
+
   
