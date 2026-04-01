@@ -28,12 +28,12 @@ output "bastion_Sg_id" {
   
 }
 
-data "aws_ssm_parameter" "public-subnet_ids" {
+data "aws_ssm_parameter" "public_subnet_ids" {
     name  = "/${var.project}/${var.environment}/public_subnet_ids"
     
 }
 
 output "public_subnet_ids" {
-    value = data.aws_ssm_parameter.public-subnet_ids.value
+    value = data.aws_ssm_parameter.public_subnet_ids.value
     sensitive = true
 }
