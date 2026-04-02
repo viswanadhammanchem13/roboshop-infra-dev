@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "bastion_from_laptop" {
 
 
 # Creating Security Group Rules for Backend ALB to accept traffic from Bastion Host.
-resource "aws_security_group_rule" "backend_alb_from_bastion" {
+resource "aws_security_group_rule" "backend-alb_from_bastion" {
   type              = "ingress"
   from_port         = 80
   to_port           = 80

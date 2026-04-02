@@ -18,7 +18,7 @@ module "backend-alb" {
 }
 
 
-resource "aws_lb_listener" "backend-alb-listener" {
+resource "aws_lb_listener" "backend_alb-listener" {
   load_balancer_arn = module.backend-alb.arn
   port              = "80"
   protocol          = "HTTP"
