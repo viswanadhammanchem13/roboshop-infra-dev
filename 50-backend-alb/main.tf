@@ -8,6 +8,7 @@ module "backend-alb" {
   security_groups = [local.backend_alb_sg_id] #This is a list.
   internal = true #This is set to true because we want to create an internal ALB that is not accessible from the internet. It will only be accessible from within the VPC.
   version = "10.4.0"
+  enable_deletion_protection = false #This is set to false because we want to allow deletion of the ALB when we destroy the infrastructure. If this is set to true, we will have to manually disable deletion protection before destroying the infrastructure.
   tags = merge(
     local.common_tags,
     {
