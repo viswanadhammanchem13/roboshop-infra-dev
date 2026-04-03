@@ -30,7 +30,57 @@ module "backend-alb" {
     vpc-id = local.vpc_id
 }
 
+#Creating Security Group Rules for VPN to accept traffic from Frontend Servers.
+module "vpn" {
+    # source = "../../terrafrom-aws-securitygroup"
+    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = var.vpn_sg_name
+    sg_description = var.vpn_description
+    vpc-id = local.vpc_id
+}
 
+#Creating Security Group Rules for VPN to accept traffic from Frontend Servers.
+module "mongodb" {
+    # source = "../../terrafrom-aws-securitygroup"
+    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = var.mongodb_sg_name
+    sg_description = var.mongodb_description
+    vpc-id = local.vpc_id
+}
+
+module "redis" {
+    # source = "../../terrafrom-aws-securitygroup"
+    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = var.redis_sg_name
+    sg_description = var.redis_description
+    vpc-id = local.vpc_id
+}
+
+module "mysql" {
+    # source = "../../terrafrom-aws-securitygroup"
+    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = var.mysql_sg_name
+    sg_description = var.mysql_description
+    vpc-id = local.vpc_id
+}
+
+module "rabbitmq" {
+    # source = "../../terrafrom-aws-securitygroup"
+    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = var.rabbitmq_sg_name
+    sg_description = var.rabbitmq_description
+    vpc-id = local.vpc_id
+}
 
 ## Bastion Host Accepting SSH from Laptop
 resource "aws_security_group_rule" "bastion_from_laptop" {
@@ -52,16 +102,7 @@ resource "aws_security_group_rule" "backend-alb_from_bastion" {
   source_security_group_id = module.bastion.sg_id #Source security group is the bastion host security group as we want to allow traffic from bastion host to backend ALB.
   security_group_id = module.backend-alb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
 }
-#Creating Security Group Rules for VPN to accept traffic from Frontend Servers.
-module "vpn" {
-    # source = "../../terrafrom-aws-securitygroup"
-    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
-    project = var.project
-    environment = var.environment
-    sg_name = var.vpn_sg_name
-    sg_description = var.vpn_description
-    vpc-id = local.vpc_id
-}
+
  ##VPN Ports 22,443,1194,943
 # # Creating Security Group Rules for Backend ALB to accept traffic from Bastion Host.
 resource "aws_security_group_rule" "vpn_ssh" {
@@ -108,4 +149,61 @@ resource "aws_security_group_rule" "backend_alb_from_vpn" {
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
   security_group_id = module.backend-alb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "mongodb_vpn_ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "mongodb_vpn" {
+  type              = "ingress"
+  from_port         = 27017
+  to_port           = 27017
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "mongodb_vpn_bastion" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "redis_vpn" {
+  count = length(var.redis_ports)
+  type              = "ingress"
+  from_port         = var.redis_ports[count.index]
+  to_port           = var.redis_ports[count.index]
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.redis.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "mysql_vpn" {
+  count = length(var.mysql_ports)
+  type              = "ingress"
+  from_port         = var.mysql_ports[count.index]
+  to_port           = var.mysql_ports[count.index]
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.mysql.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "rabbitmq_vpn" {
+  count = length(var.rabbitmq_ports)
+  type              = "ingress"
+  from_port         = var.rabbitmq_ports[count.index]
+  to_port           = var.rabbitmq_ports[count.index]
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.rabbitmq.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
 }

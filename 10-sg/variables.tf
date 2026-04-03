@@ -43,3 +43,51 @@ variable "vpn_sg_name" {
 variable "vpn_description" {
   default = "Security group for VPN"
 }
+
+variable "mongodb_sg_name" {
+    default= "mongodb-sg"
+}
+
+variable "mongodb_description" {
+  default = "Security group for MongoDB"
+}
+
+variable "redis_sg_name" {
+    default= "redis-sg"
+}
+
+variable "redis_description" {
+  default = "Security group for Redis"
+}
+
+variable "mysql_sg_name" {
+    default= "mysql-sg"
+}
+
+variable "mysql_description" {
+  default = "Security group for MySQL"
+}
+
+variable "rabbitmq_sg_name" {
+    default= "rabbitmq-sg"
+}
+
+variable "rabbitmq_description" {
+  default = "Security group for RabbitMQ"
+}
+
+variable "redis_ports" {
+  type = list(number)
+default = [ 22,6379 ]
+}
+
+variable "mysql_ports" {
+  type = list(number)
+default = [ 22,3306 ]
+}
+
+variable "rabbitmq_ports" {
+  type = list(number)
+default = [ 22,5672 ]
+}
+
