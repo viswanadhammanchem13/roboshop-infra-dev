@@ -1,4 +1,5 @@
 resource "aws_instance" "mongodb" {
+  iam_instance_profile = "EC2-SSM-Access"
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.mongodb_sg_id]
@@ -15,7 +16,8 @@ resource "aws_instance" "mongodb" {
 
 resource "terraform_data" "mongodb"{
   triggers_replace = [
-aws_instance.mongodb.id
+  aws_instance.mongodb.id
+
   ]
 
     provisioner "file" {
@@ -44,6 +46,7 @@ resource "aws_instance" "mysql" {
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.mysql_sg_id]
   subnet_id = local.database_subnet_ids [0] # Assuming you want to use the first subnet from the list for the MySQL instance.
+  iam_instance_profile = "EC2-SSM-Access"
   
 
   tags = merge(
@@ -80,6 +83,7 @@ aws_instance.mysql.id
 }
 
 resource "aws_instance" "redis" {
+  iam_instance_profile = "EC2-SSM-Access"
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.redis_sg_id]
@@ -120,6 +124,7 @@ aws_instance.redis.id
 }
 
 resource "aws_instance" "rabbitmq" {
+  iam_instance_profile = "EC2-SSM-Access"
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.rabbitmq_sg_id]
