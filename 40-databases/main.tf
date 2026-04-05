@@ -1,5 +1,4 @@
 resource "aws_instance" "mongodb" {
-  iam_instance_profile = "EC2-SSM-Access"
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.mongodb_sg_id]
@@ -16,7 +15,7 @@ resource "aws_instance" "mongodb" {
 
 resource "terraform_data" "mongodb"{
   triggers_replace = [
-  aws_instance.mongodb.id
+    aws_instance.mongodb.id
 
   ]
 
@@ -46,7 +45,7 @@ resource "aws_instance" "mysql" {
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.mysql_sg_id]
   subnet_id = local.database_subnet_ids [0] # Assuming you want to use the first subnet from the list for the MySQL instance.
-  iam_instance_profile = "EC2-SSM-Access"
+  iam_instance_profile = "EC2FetchSSMParams"
   
 
   tags = merge(
@@ -57,33 +56,58 @@ resource "aws_instance" "mysql" {
   )
 }
 
-resource "terraform_data" "mysql"{
-  triggers_replace = [
-aws_instance.mysql.id
-  ]
+# resource "terraform_data" "mysql"{
+#   triggers_replace = [
+#   aws_instance.mysql.id
+#   ]
 
-    provisioner "file" {
-        source      = "bootstrap.sh"
-        destination = "/tmp/bootstrap.sh"
-    }
-    connection {
-        type     = "ssh"
-        user     = "ec2-user"
-        password = "DevOps321"
-        host     = aws_instance.mongodb.private_ip
-    }
+#     provisioner "file" {
+#         source      = "bootstrap.sh"
+#         destination = "/tmp/bootstrap.sh"
+#     }
+#     connection {
+#         type     = "ssh"
+#         user     = "ec2-user"
+#         password = "DevOps321"
+#         host     = aws_instance.mongodb.private_ip
+#     }
     
-    provisioner "remote-exec" {
-        inline = [
-        "chmod +x /tmp/bootstrap.sh",
-        "sudo sh /tmp/bootstrap.sh mysql"
-        ]
+#     provisioner "remote-exec" {
+#         inline = [
+#         "chmod +x /tmp/bootstrap.sh",
+#         "sudo sh /tmp/bootstrap.sh mysql"
+#         ]
 
-    }
+#     }
+# }
+
+resource "terraform_data" "mysql" {
+  triggers_replace = [
+    aws_instance.mysql.id
+  ]
+  
+  provisioner "file" {
+    source      = "bootstrap.sh"
+    destination = "/tmp/bootstrap.sh"
+  }
+
+  connection {
+    type     = "ssh"
+    user     = "ec2-user"
+    password = "DevOps321"
+    host     = aws_instance.mysql.private_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "sudo sh /tmp/bootstrap.sh mysql"
+    ]
+  }
 }
 
+
 resource "aws_instance" "redis" {
-  iam_instance_profile = "EC2-SSM-Access"
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.redis_sg_id]
@@ -100,7 +124,7 @@ resource "aws_instance" "redis" {
 
 resource "terraform_data" "redis"{
   triggers_replace = [
-aws_instance.redis.id
+    aws_instance.redis.id
   ]
 
     provisioner "file" {
@@ -124,7 +148,7 @@ aws_instance.redis.id
 }
 
 resource "aws_instance" "rabbitmq" {
-  iam_instance_profile = "EC2-SSM-Access"
+  iam_instance_profile = "EC2FetchSSMParams"
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.rabbitmq_sg_id]
@@ -141,7 +165,7 @@ resource "aws_instance" "rabbitmq" {
 
 resource "terraform_data" "rabbitmq"{
   triggers_replace = [
-aws_instance.rabbitmq.id
+    aws_instance.rabbitmq.id
   ]
 
     provisioner "file" {
