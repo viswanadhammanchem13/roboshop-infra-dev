@@ -91,3 +91,12 @@ variable "rabbitmq_ports" {
 default = [ 22,5672 ]
 }
 
+variable "catalogue_sg_name" {
+    default= "catalogue-sg"
+}
+
+variable "catalogue_description" {
+  default = "Security group for Catalogue"
+}
+
+

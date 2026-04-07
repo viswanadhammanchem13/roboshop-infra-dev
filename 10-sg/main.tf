@@ -82,6 +82,17 @@ module "rabbitmq" {
     vpc-id = local.vpc_id
 }
 
+module "catalogue" {
+    # source = "../../terrafrom-aws-securitygroup"
+    source = "git::https://github.com/viswanadhammanchem13/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = var.catalogue_sg_name
+    sg_description = var.catalogue_description
+    vpc-id = local.vpc_id
+}
+   
+
 ## Bastion Host Accepting SSH from Laptop
 resource "aws_security_group_rule" "bastion_from_laptop" {
   type              = "ingress"
@@ -206,4 +217,49 @@ resource "aws_security_group_rule" "rabbitmq_vpn" {
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
   security_group_id = module.rabbitmq.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "catalogue_backend_alb" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.backend-alb.sg_id #Source security group is the bastion host security group as we want to allow traffic from bastion host to backend ALB.
+  security_group_id = module.catalogue.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "catalogue_vpn_ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.catalogue.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "catalogue_bastion_ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id #Source security group is the bastion host security group as we want to allow traffic from bastion host to backend ALB.
+  security_group_id = module.catalogue.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "catalogue_vpn_http" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
+  security_group_id = module.catalogue.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+}
+
+resource "aws_security_group_rule" "mongodb_catalogue" {
+  type              = "ingress"
+  from_port         = 27017
+  to_port           = 27017
+  protocol          = "tcp"
+  source_security_group_id = module.catalogue.sg_id #Source security group is the bastion host security group as we want to allow traffic from bastion host to backend ALB.
+  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
 }

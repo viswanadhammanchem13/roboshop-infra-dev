@@ -33,3 +33,15 @@ resource "aws_lb_listener" "backend_alb-listener" {
     }
   }
 }
+
+resource "aws_route53_record" "backend-alb-record" {
+  zone_id = var.zone_id
+  name    = "*.backend-dev.${var.zone_name}"
+  type    = "A"
+
+  alias {
+    name                   = module.backend-alb.dns_name
+    zone_id                = module.backend-alb.zone_id #This is the hosted zone ID of the ALB. We can get this from the ALB module output.
+    evaluate_target_health = true
+  }
+}
