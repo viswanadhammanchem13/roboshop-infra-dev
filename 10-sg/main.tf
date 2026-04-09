@@ -260,6 +260,6 @@ resource "aws_security_group_rule" "mongodb_catalogue" {
   from_port         = 27017
   to_port           = 27017
   protocol          = "tcp"
-  source_security_group_id = module.catalogue.sg_id #Source security group is the bastion host security group as we want to allow traffic from bastion host to backend ALB.
-  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+  source_security_group_id = module.catalogue.sg_id 
+  security_group_id = module.mongodb.sg_id 
 }

@@ -51,8 +51,17 @@ resource "terraform_data" "catalogue"{
     provisioner "remote-exec" {
         inline = [
         "chmod +x /tmp/bootstrap.sh",
-        "sudo sh /tmp/bootstrap.sh catalogue"
+        "sudo sh /tmp/bootstrap.sh catalogue ${var.environment}"
         ]
 
     }
+}
+
+resource "aws_route53_record" "catalogue" {
+  zone_id = var.zone_id
+  name    = "catalogue-${var.environment}.${var.zone_name}"
+  type    = "A"
+  ttl     = 1
+  records = [aws_instance.catalogue.private_ip]
+  allow_overwrite = true
 }

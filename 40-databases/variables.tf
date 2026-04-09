@@ -16,3 +16,8 @@ variable "zone_id" {
 variable "zone_name" {
   default = "manchem.site"
 }
+
+variable "DB_Components" {
+  type = list(string)
+  default = ["mongodb", "mysql", "redis", "rabbitmq"]
+}
