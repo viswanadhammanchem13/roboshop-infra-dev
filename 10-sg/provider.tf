@@ -8,7 +8,8 @@ terraform {
 
   backend "s3" {
     bucket = "84s-remotestate-manchem-dev"
-    key    = "84s-remotestate-manchem/10-sg-dev"
+    # key    = "84s-remotestate-manchem/10-sg-dev"
+    key = "10-sg"
     region = "us-east-1"
     # dynamodb_table = "84s-remotestate-manchem"
     use_lockfile = true
