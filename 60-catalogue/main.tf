@@ -66,28 +66,35 @@ resource "aws_route53_record" "catalogue" {
   allow_overwrite = true
 }
 
-# resource "aws_ec2_instance_state" "catalogue" {
-#   instance_id = aws_instance.catalogue.id
-#   state       = "stopped"
-#   depends_on = [terraform_data.catalogue]
-# }
+resource "aws_ec2_instance_state" "catalogue" {
+  instance_id = aws_instance.catalogue.id
+  state       = "stopped"
+  depends_on = [terraform_data.catalogue]
+}
 
-# resource "aws_ami_from_instance" "catalogue" {
-#   name               = "${var.project}-${var.environment}-catalogue"
-#   source_instance_id = aws_instance.catalogue.id
-#   depends_on = [aws_ec2_instance_state.catalogue]
-#   tags = merge(
-#     local.common_tags,
-#     {
-#       Name = "${var.project}-${var.environment}-catalogue"
-#     }
-#   )
-# }
+resource "aws_ami_from_instance" "catalogue" {
+  name               = "${var.project}-${var.environment}-catalogue"
+  source_instance_id = aws_instance.catalogue.id
+  depends_on = [aws_ec2_instance_state.catalogue]
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-catalogue"
+    }
+  )
+}
 
-# resource "aws_ec2_instance_state" "catalogue" {
-#   instance_id = aws_instance.catalogue.id
-#   state       = "running"
-#   depends_on = [terraform_data.catalogue]
+# resource "terraform_data" "catalogue_start_instance"{
+#   triggers_replace = [
+#     aws_instance.catalogue.id
+#   ]
+#   ##Makesure aws configuration is done in the system where you are running terraform apply, otherwise this command will fail. You can use AWS CLI or AWS Console to check the status of the instance and AMI creation.
+#   ## Make sure to terminate the instance after creating the AMI, otherwise you will have an extra running instance that is not needed.
+#   provisioner "local-exec" {
+#     command = "aws ec2 start-instances --instance-ids ${aws_instance.catalogue.id}"
+#   }
+
+#   depends_on = [aws_ami_from_instance.catalogue]
 # }
 
 # resource "terraform_data" "catalogue_delete_instance"{
