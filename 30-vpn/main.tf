@@ -1,6 +1,6 @@
 resource "aws_key_pair" "openvpn" {
   key_name   = "openvpn"
-  public_key = file("D:\\Devops\\Daws-84s\\Key_Authentication\\opnvpn.pub") #for mac users use /
+  public_key = file("D:\\Devops\\Daws-84s\\Key_Authentication\\opnvpn.pub") #for mac and linux users use / and for windows users use \\ in the file path. Make sure to create this public key file in the specified location before running the Terraform code.
 }
 
 resource "aws_instance" "vpn-server" {
