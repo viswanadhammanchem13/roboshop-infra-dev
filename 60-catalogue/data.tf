@@ -35,3 +35,7 @@ data "aws_ami" "joindevops" {
     values = ["ami-0220d79f3f480ecf5"]
   }
 }
+
+data "aws_ssm_parameter" "backend_alb_listener_arn" {
+    name  = "/${var.project}/${var.environment}/backend_alb_listener_arn"
+}
