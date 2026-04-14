@@ -91,12 +91,55 @@ variable "rabbitmq_ports" {
 default = [ 22,5672 ]
 }
 
+
 variable "catalogue_sg_name" {
     default= "catalogue-sg"
 }
 
 variable "catalogue_description" {
   default = "Security group for Catalogue"
+}
+
+variable "cart_sg_name" {
+    default= "cart-sg"
+}
+
+variable "cart_description" {
+  default = "Security group for Cart"
+}
+
+variable "user_sg_name" {
+    default= "user-sg"
+}
+
+variable "user_description" {
+  default = "Security group for User"
+}
+
+
+
+variable "payment_sg_name" {
+    default= "payment-sg"
+}
+
+variable "payment_description" {
+  default = "Security group for Payment"
+}
+
+variable "shipping_sg_name" {
+    default= "shipping-sg"
+}
+
+variable "shipping_description" {
+  default = "Security group for Shipping"
+}
+
+variable "frontend_alb_sg_name" {
+    default= "frontend-alb"
+}
+
+variable "frontend_alb_description" {
+  default = "Security group for Frontend ALB"
 }
 
 

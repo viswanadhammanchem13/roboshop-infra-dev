@@ -1,0 +1,201 @@
+name: Roboshop SG and Rules
+
+security_groups:
+  DB:
+    - mongodb
+    - redis
+    - mysql
+    - rabbitmq
+
+  APP:
+    - catalogue
+    - user
+    - cart
+    - shipping
+    - payment
+
+  INFRA:
+    - backend_alb
+    - frontend_alb
+    - frontend
+    - vpn
+    - bastion
+
+
+rules:
+
+  # ======================
+  # BASTION
+  # ======================
+  bastion:
+    - name: bastion_from_internet
+      source: 0.0.0.0/0
+      destination: bastion
+      ports: [22]
+      purpose: SSH access from laptop to bastion
+
+  # ======================
+  # VPN
+  # ======================
+  vpn:
+    - name: vpn_public_access
+      source: 0.0.0.0/0
+      destination: vpn
+      ports: [22, 443, 943, 1194]
+      purpose: VPN should be accessible from internet
+
+  # ======================
+  # FRONTEND ALB
+  # ======================
+  frontend_alb:
+    - name: public_http
+      source: 0.0.0.0/0
+      destination: frontend_alb
+      ports: [80]
+      purpose: Public HTTP access
+
+    - name: public_https
+      source: 0.0.0.0/0
+      destination: frontend_alb
+      ports: [443]
+      purpose: Public HTTPS access
+
+  # ======================
+  # FRONTEND
+  # ======================
+  frontend:
+    - name: frontend_from_alb
+      source: frontend_alb
+      destination: frontend
+      ports: [80]
+      purpose: ALB routes traffic to frontend
+
+    - name: frontend_from_vpn
+      source: vpn
+      destination: frontend
+      ports: [22]
+      purpose: SSH via VPN
+
+    - name: frontend_from_bastion
+      source: bastion
+      destination: frontend
+      ports: [22]
+      purpose: SSH via bastion
+
+  # ======================
+  # BACKEND ALB
+  # ======================
+  backend_alb:
+    - name: backend_from_frontend
+      source: frontend
+      destination: backend_alb
+      ports: [80]
+      purpose: Frontend calls backend APIs
+
+    - name: backend_from_vpn
+      source: vpn
+      destination: backend_alb
+      ports: [80]
+      purpose: Testing via VPN
+
+    - name: backend_from_bastion
+      source: bastion
+      destination: backend_alb
+      ports: [80]
+      purpose: Admin access
+
+  # ======================
+  # CATALOGUE
+  # ======================
+  catalogue:
+    - name: catalogue_from_backend_alb
+      source: backend_alb
+      destination: catalogue
+      ports: [8080]
+      purpose: Backend ALB routes to catalogue
+
+    - name: catalogue_from_vpn
+      source: vpn
+      destination: catalogue
+      ports: [22, 8080]
+      purpose: SSH + testing
+
+    - name: catalogue_from_bastion
+      source: bastion
+      destination: catalogue
+      ports: [22]
+      purpose: SSH
+
+  # ======================
+  # USER / CART / SHIPPING / PAYMENT
+  # ======================
+  app_services:
+    - name: service_from_backend_alb
+      source: backend_alb
+      destination: [user, cart, shipping, payment]
+      ports: [8080]
+      purpose: Backend ALB routing
+
+    - name: service_from_vpn
+      source: vpn
+      destination: [user, cart, shipping, payment]
+      ports: [22, 8080]
+      purpose: SSH + testing
+
+    - name: service_from_bastion
+      source: bastion
+      destination: [user, cart, shipping, payment]
+      ports: [22]
+      purpose: SSH
+
+  # ======================
+  # MONGODB
+  # ======================
+  mongodb:
+    - name: mongodb_from_vpn
+      source: vpn
+      destination: mongodb
+      ports: [22, 27017]
+      purpose: Admin + DB access
+
+    - name: mongodb_from_catalogue
+      source: catalogue
+      destination: mongodb
+      ports: [27017]
+      purpose: Catalogue uses MongoDB
+
+    - name: mongodb_from_user
+      source: user
+      destination: mongodb
+      ports: [27017]
+      purpose: User service uses MongoDB
+
+  # ======================
+  # REDIS
+  # ======================
+  redis:
+    - name: redis_access
+      source: [vpn, bastion, user, cart]
+      destination: redis
+      ports: [6379]
+      purpose: Cache access
+
+  # ======================
+  # MYSQL
+  # ======================
+  mysql:
+    - name: mysql_access
+      source: [vpn, bastion, shipping]
+      destination: mysql
+      ports: [3306]
+      purpose: Shipping service DB
+
+  # ======================
+  # RABBITMQ
+  # ======================
+  rabbitmq:
+    - name: rabbitmq_access
+      source: [vpn, bastion, rabbitmq]
+      destination: rabbitmq
+      ports: [5672]
+      purpose: Messaging system

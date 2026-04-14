@@ -57,14 +57,21 @@ resource "terraform_data" "catalogue"{
     }
 }
 
-resource "aws_route53_record" "catalogue" {
-  zone_id = var.zone_id
-  name    = "catalogue.backend-${var.environment}.${var.zone_name}"
-  type    = "A"
-  ttl     = 1
-  records = [aws_instance.catalogue.private_ip]
-  allow_overwrite = true
-}
+
+## Route53 record is not needed because we are using ALB to route the traffic to the instances, and the ALB will have its own DNS name that we can use to access the service. If we create a Route53 record for the catalogue service, it would point to the private IP of the instance, which is not accessible from outside the VPC. Instead, we should use the DNS name of the ALB to access the catalogue service, and the ALB will route the traffic to the instances based on the listener rules we have defined. This way, we can ensure that the service is accessible from outside the VPC and can handle traffic routing and load balancing effectively.
+# resource "aws_route53_record" "catalogue" {
+#   zone_id = var.zone_id
+#   name    = "catalogue.backend-${var.environment}.${var.zone_name}"
+#   type    = "A"
+#   ttl     = 1
+#   records = [aws_instance.catalogue.private_ip]
+#   # alias {
+#   #   name                   = module.backend-alb.dns_name
+#   #   zone_id                = module.backend-alb.zone_id
+#   #   evaluate_target_health = true
+#   # }
+#   allow_overwrite = true
+# }
 
 resource "aws_ec2_instance_state" "catalogue" {
   instance_id = aws_instance.catalogue.id
@@ -83,7 +90,7 @@ resource "aws_ami_from_instance" "catalogue" {
     }
   )
 }
-
+##If you want to start the instance after creating the AMI, you can use the following terraform_data resource to execute the AWS CLI command to start the instance. However, it is important to note that starting the instance after creating the AMI may not be necessary, as the instance will be stopped and an AMI will be created from it. You can choose to keep the instance stopped or terminate it after creating the AMI, depending on your requirements and cost considerations. If you decide to keep the instance stopped, you can remove this terraform_data resource and manage the instance state manually using AWS CLI or AWS Console as needed.
 # resource "terraform_data" "catalogue_start_instance"{
 #   triggers_replace = [
 #     aws_instance.catalogue.id
