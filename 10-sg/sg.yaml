@@ -199,3 +199,29 @@ rules:
       destination: rabbitmq
       ports: [5672]
       purpose: Messaging system
+
+
+
+🧠 3. SIMPLE RULE TO REMEMBER
+
+Whenever you write Terraform:
+
+👉 Ask 2 questions:
+
+Who is calling? → source
+Who should receive? → destination
+🚀 Example from your code
+resource "aws_security_group_rule" "mongodb_catalogue" {
+  source_security_group_id = module.catalogue.sg_id
+  security_group_id        = module.mongodb.sg_id
+}
+
+✔ YAML:
+
+source: catalogue
+destination: mongodb
+purpose: catalogue talks to mongodb
+⚡ FINAL UNDERSTANDING
+You are NOT opening both sides
+You are defining direction of traffic
+Security Groups are stateful, so return traffic is automatic

@@ -177,8 +177,8 @@ resource "aws_security_group_rule" "backend-alb_from_bastion" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  source_security_group_id = module.bastion.sg_id #Source security group is the bastion host security group as we want to allow traffic from bastion host to backend ALB.
-  security_group_id = module.backend-alb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+  source_security_group_id = module.bastion.sg_id 
+  security_group_id = module.backend-alb.sg_id 
 }
 
 resource "aws_security_group_rule" "backend_alb_from_vpn" {
@@ -186,8 +186,8 @@ resource "aws_security_group_rule" "backend_alb_from_vpn" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
-  security_group_id = module.backend-alb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+  source_security_group_id = module.vpn.sg_id 
+  security_group_id = module.backend-alb.sg_id 
 }
 
 resource "aws_security_group_rule" "backend_alb_frontend" {
@@ -280,8 +280,8 @@ resource "aws_security_group_rule" "vpn_ssh" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"] #source security group allowing traffic from anywhere as we want to allow traffic from anywhere to VPN.
-  security_group_id = module.vpn.sg_id #Destination security group is the VPN security group as we want to allow traffic to VPN.
+  cidr_blocks = ["0.0.0.0/0"] 
+  security_group_id = module.vpn.sg_id 
 }
 
 resource "aws_security_group_rule" "vpn_https" {
@@ -289,8 +289,8 @@ resource "aws_security_group_rule" "vpn_https" {
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]#source security group allowing traffic from anywhere as we want to allow traffic from anywhere to VPN.
-  security_group_id = module.vpn.sg_id #Destination security group is the VPN security group as we want to allow traffic to VPN.
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.vpn.sg_id 
 }
 
 resource "aws_security_group_rule" "vpn_943" {
@@ -298,8 +298,8 @@ resource "aws_security_group_rule" "vpn_943" {
   from_port         = 943
   to_port           = 943
   protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]#source security group allowing traffic from anywhere as we want to allow traffic from anywhere to VPN.
-  security_group_id = module.vpn.sg_id #Destination security group is the VPN security group as we want to allow traffic to VPN.
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.vpn.sg_id 
 }
 
 resource "aws_security_group_rule" "vpn_1194" {
@@ -307,8 +307,8 @@ resource "aws_security_group_rule" "vpn_1194" {
   from_port         = 1194
   to_port           = 1194
   protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]#source security group allowing traffic from anywhere as we want to allow traffic from anywhere to VPN.
-  security_group_id = module.vpn.sg_id #Destination security group is the VPN security group as we want to allow traffic to VPN.
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.vpn.sg_id 
 }
 
 
@@ -318,8 +318,8 @@ resource "aws_security_group_rule" "mongodb_vpn_ssh" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
-  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+  source_security_group_id = module.vpn.sg_id 
+  security_group_id = module.mongodb.sg_id
 }
 
 resource "aws_security_group_rule" "mongodb_vpn" {
@@ -327,8 +327,8 @@ resource "aws_security_group_rule" "mongodb_vpn" {
   from_port         = 27017
   to_port           = 27017
   protocol          = "tcp"
-  source_security_group_id = module.vpn.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
-  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+  source_security_group_id = module.vpn.sg_id 
+  security_group_id = module.mongodb.sg_id 
 }
 
 resource "aws_security_group_rule" "mongodb_vpn_bastion" {
@@ -336,8 +336,8 @@ resource "aws_security_group_rule" "mongodb_vpn_bastion" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  source_security_group_id = module.bastion.sg_id #Source security group is the VPN security group as we want to allow traffic from VPN to backend ALB.
-  security_group_id = module.mongodb.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
+  source_security_group_id = module.bastion.sg_id 
+  security_group_id = module.mongodb.sg_id 
 }
 
 resource "aws_security_group_rule" "mongodb_catalogue" {
