@@ -340,6 +340,15 @@ resource "aws_security_group_rule" "mongodb_vpn_bastion" {
   security_group_id = module.mongodb.sg_id 
 }
 
+resource "aws_security_group_rule" "mongodb_bastion_ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id 
+  security_group_id = module.mongodb.sg_id
+}
+
 resource "aws_security_group_rule" "mongodb_catalogue" {
   type              = "ingress"
   from_port         = 27017
