@@ -32,7 +32,7 @@ resource "aws_instance" "catalogue" {
 }
 
 resource "terraform_data" "catalogue"{
-  triggers_replace = [
+  triggers_replace = [ ##This trigger will cause the data source to be recreated whenever the catalogue instance is replaced.
     aws_instance.catalogue.id
 
   ]
@@ -56,22 +56,6 @@ resource "terraform_data" "catalogue"{
 
     }
 }
-
-
-## Route53 record is not needed because we are using ALB to route the traffic to the instances, and the ALB will have its own DNS name that we can use to access the service. If we create a Route53 record for the catalogue service, it would point to the private IP of the instance, which is not accessible from outside the VPC. Instead, we should use the DNS name of the ALB to access the catalogue service, and the ALB will route the traffic to the instances based on the listener rules we have defined. This way, we can ensure that the service is accessible from outside the VPC and can handle traffic routing and load balancing effectively.
-# resource "aws_route53_record" "catalogue" {
-#   zone_id = var.zone_id
-#   name    = "catalogue.backend-${var.environment}.${var.zone_name}"
-#   type    = "A"
-#   ttl     = 1
-#   records = [aws_instance.catalogue.private_ip]
-#   # alias {
-#   #   name                   = module.backend-alb.dns_name
-#   #   zone_id                = module.backend-alb.zone_id
-#   #   evaluate_target_health = true
-#   # }
-#   allow_overwrite = true
-# }
 
 resource "aws_ec2_instance_state" "catalogue" {
   instance_id = aws_instance.catalogue.id
@@ -191,7 +175,7 @@ resource "aws_launch_template" "catalogue" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 50
+      min_healthy_percentage = 50 ##This means that during the instance refresh process, at least 50% of the instances in the Auto Scaling group must be healthy and available to serve traffic. This helps ensure that there is sufficient capacity to handle incoming requests while instances are being replaced or updated.
     }
     triggers = ["launch_template"]
   }
@@ -206,7 +190,7 @@ resource "aws_launch_template" "catalogue" {
   name                   = "${var.project}-${var.environment}-catalogue"
   autoscaling_group_name = aws_autoscaling_group.catalogue.name
    policy_type            = "TargetTrackingScaling"
-  #  cooldown               = 120
+  #  cooldown               = 120 ##Cooldown period is the amount of time, in seconds, after a scaling activity completes before any further scaling activities can start. This helps prevent rapid scaling actions that could lead to instability in your application. In this case, a cooldown period of 120 seconds means that after a scaling activity (either scale out or scale in) is completed, the Auto Scaling group will wait for 120 seconds before it can initiate another scaling activity. This allows the system to stabilize and ensures that the scaling actions are not triggered too frequently, which could lead to unnecessary costs and performance issues.
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
