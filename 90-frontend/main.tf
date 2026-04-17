@@ -1,12 +1,12 @@
 resource "aws_lb_target_group" "frontend" {
   name     = "${var.project}-${var.environment}-frontend" #roboshop-dev-frontend
-  port     = 443
-  protocol = "HTTPS"
+  port     = 80
+  protocol = "HTTP"
   vpc_id   = local.vpc_id
   health_check {
     path                = "/"
-    protocol            = "HTTPS"
-    port                = 443
+    protocol            = "HTTP"
+    port                = 80
     matcher             = "200-299"
     interval            = 5
     timeout             = 2
@@ -200,18 +200,18 @@ resource "aws_launch_template" "frontend" {
   }
 }
 
-resource "aws_lb_listener_rule" "front" {
-  listener_arn = local.backend_alb_listener_arn
-  priority     = 10
+resource "aws_lb_listener_rule" "frontend" {
+  listener_arn = local.frontend_listener_arn
+  priority     = 20
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.catalogue.arn
+    target_group_arn = aws_lb_target_group.frontend.arn
   }
 
   condition {
     host_header {
-      values = ["catalogue.backend-${var.environment}.${var.zone_name}"]
+      values = ["${var.environment}.${var.zone_name}"]
     }
   }
 }
