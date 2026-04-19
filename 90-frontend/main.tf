@@ -148,7 +148,7 @@ resource "aws_launch_template" "frontend" {
     vpc_zone_identifier = local.private_subnet_id
     health_check_grace_period = 90
     health_check_type         = "ELB"
-    desired_capacity   = 4
+    desired_capacity   = 1
     max_size           = 10
     min_size           = 1
 
