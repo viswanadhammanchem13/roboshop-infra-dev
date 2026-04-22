@@ -463,13 +463,13 @@ resource "aws_security_group_rule" "rabbitmq_bastion" {
   security_group_id = module.rabbitmq.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
 }
 
-resource "aws_security_group_rule" "rabbitmq_rabbitmq" {
+resource "aws_security_group_rule" "rabbitmq_payment" {
   count = length(var.rabbitmq_ports)
   type              = "ingress"
   from_port         = var.rabbitmq_ports[count.index]
   to_port           = var.rabbitmq_ports[count.index]
   protocol          = "tcp"
-  source_security_group_id = module.rabbitmq.sg_id #Source security group is the RabbitMQ security group as we want to allow traffic from RabbitMQ to backend ALB.
+  source_security_group_id = module.payment.sg_id #Source security group is the RabbitMQ security group as we want to allow traffic from RabbitMQ to backend ALB.
   security_group_id = module.rabbitmq.sg_id #Destination security group is the backend ALB security group as we want to allow traffic to backend ALB.
 }
 
