@@ -201,7 +201,7 @@ resource "aws_launch_template" "shipping" {
 }
 
 resource "aws_lb_listener_rule" "shipping" {
-  listener_arn = local.backend_alb_listener_arn
+  listener_arn = local.backend_alb_listener_arn.arn
   priority     = 60
 
   action {

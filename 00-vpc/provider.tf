@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket = "84s-remotestate-manchem-dev"
-    # key    = "84s-remotestate-manchem-roboshop-infra-00vpc-dev"
+    # key    = "00vpc"
     key    = "00-vpc"
     region = "us-east-1"
     # dynamodb_table = "84s-remotestate-manchem"
