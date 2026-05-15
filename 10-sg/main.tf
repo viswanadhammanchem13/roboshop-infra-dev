@@ -349,6 +349,15 @@ resource "aws_security_group_rule" "mongodb_bastion_ssh" {
   security_group_id = module.mongodb.sg_id
 }
 
+resource "aws_security_group_rule" "mongodb_bastion" {
+  type              = "ingress"
+  from_port         = 27012
+  to_port           = 22012
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id 
+  security_group_id = module.mongodb.sg_id
+}
+
 resource "aws_security_group_rule" "mongodb_catalogue" {
   type              = "ingress"
   from_port         = 27017
