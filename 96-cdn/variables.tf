@@ -1,22 +1,27 @@
+variable "project" {
+  type = string
+  default = "roboshop"
+}
+
+variable "environment" {
+ type = string
+ default = "dev"
+}
+
+variable "zone_id" {
+  default = "Z03584735O3LYRT2Q9HU"
+  
+}
+
+variable "zone_name" {
+  default = "manchem.site"
+}
+
+
 variable "component" {
-    default = {
-        catalogue = {
-            rule_priority = 20
-        }
-        user = {
-            rule_priority = 30
-        }
-        cart = {
-            rule_priority = 40
-        }
-        shipping = {
-            rule_priority = 50
-        }
-        payment = {
-            rule_priority = 60
-        }
-        frontend = {
-            rule_priority = 10
-        }
-    } 
+
+}
+
+variable "rule_priority" {
+    
 }
