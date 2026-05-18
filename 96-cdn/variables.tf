@@ -16,12 +16,3 @@ variable "zone_id" {
 variable "zone_name" {
   default = "manchem.site"
 }
-
-
-variable "component" {
-
-}
-
-variable "rule_priority" {
-    
-}
