@@ -5,7 +5,7 @@ resource "aws_cloudfront_distribution" "roboshop" {
         http_port              = 80 // Required to be set but not used
         https_port             = 443
         origin_protocol_policy = "https-only"
-        origin_ssl_protocols   = ["TLSv1.2", "TLSv1.3"]
+        origin_ssl_protocols   = ["TLSv1.2"]
     }
 
     origin_id =  "cdn.${var.zone_name}"
